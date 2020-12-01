@@ -1,0 +1,78 @@
+# Setup  Kind Cluster
+
+sudo kind create cluster --name helm --image kindest/node:v1.19.1
+
+docker run -it --rm -v ${HOME}:/root/ -v ${PWD}:/work -w /work --net host alpine sh
+
+# install curl & kubectl
+
+apk add --no-cache curl nano
+curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+
+chmod +x ./kubectl
+mv ./kubectl /usr/local/bin/kubectl
+
+
+# Sealed Secrets
+
+Sealed Secrets is comprised of two components:
+A cluster-side Kubernetes controller/operator
+A client-side utility called kubeseal
+
+-------------
+
+# Install Kubeseal
+
+
+wget https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.12.4/kubeseal-linux-amd64 -O kubeseal
+sudo install -m 755 kubeseal /usr/local/bin/kubeseal
+
+
+kubectl apply -f https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.12.4/controller.yaml
+
+---------------
+
+
+Create a ‘SealedSecret’
+To create a SealedSecret, we’d first need to create a Secret file.
+
+echo -n "This is a secret!" | kubectl create secret generic mysecret -n web --dry-run --from-file=secret=/dev/stdin -o yaml > secret.yaml
+
+
+-----------------
+
+kubeseal --format yaml <secret.yaml >sealedsecret.yaml
+
+kubectl create ns web
+
+kubectl apply -f sealedsecret.yaml
+
+kubectl apply -n web -f - <<EOF
+apiVersion: v1
+kind: Pod
+metadata:
+  name: busybox
+  labels:
+    app: busybox
+spec:
+  containers:
+  - image: busybox
+    command:
+      - sleep
+      - "3600"
+    imagePullPolicy: IfNotPresent
+    name: busybox
+    volumeMounts:
+      - name: mysecretvol
+        mountPath: "/tmp/mysecret"
+        readOnly: true
+  volumes:
+  - name: mysecretvol
+    secret:
+      secretName: mysecret
+EOF
+
+# Test
+kubectl exec -it busybox -n web -- cat /tmp/mysecret/secret
+This is a secret!
+
