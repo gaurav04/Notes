@@ -76,3 +76,5 @@ EOF
 kubectl exec -it busybox -n web -- cat /tmp/mysecret/secret
 This is a secret!
 
+
+Ref: https://medium.com/better-programming/encrypting-kubernetes-secrets-with-sealed-secrets-fe363149a211
