@@ -1,6 +1,6 @@
 # Setup  Kind Cluster
 
-sudo kind create cluster --name ubeseal --image kindest/node:v1.19.1
+sudo kind create cluster --name kubeseal --image kindest/node:v1.19.1
 
 docker run -it --rm -v ${HOME}:/root/ -v ${PWD}:/work -w /work --net host alpine sh
 
