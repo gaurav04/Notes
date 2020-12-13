@@ -1,0 +1,70 @@
+#!/bin/bash
+
+ENV=${ENV:-staging}
+echo $ENV
+
+declare -a DEPLOYMENT_NAME=(order basket login)  ## declare aary
+
+for VAR in "${DEPLOYMENT_NAME[@]}"  ##iterate 
+do
+    echo $VAR
+done
+
+echo ${#DEPLOYMENT_NAME[@]}  ## Size of array
+
+
+
+---------
+
+# for string manipulation
+==, =, !=, \>, \<
+-z is string empty
+-n for not empty
+
+-f filename   ->  true if it is a regular file
+-d directory  -> true if it is a dir 
+-s filename   -> if it is non-zero size.
+
+--------
+
+Arithmetic exp
+
+$((expression))
+>> if (( 15%3 == 0 )); then echo "Divisible by 3"; fi
+
+--------
+## Redirect STDOUT to STDERR and STDERR to STDOUT
+>> ls -l 1>&2 
+>> ls -l 2>&1
+## Redirect both in the same command
+>> ls -1 1> stdout.log 2> stderr.logl
+>> ls -l > out.log 2>&1  # redirect output to out.log then redirect that stderr to stdout 
+## https://medium.com/@codenameyau/step-by-step-breakdown-of-dev-null-a0f516f53158  /dev/null
+/dev/null-  it immediately discards anything written to it and only returns an end-of-file EOF when read.
+
+$ ls -0 > /dev/null 2>&1
+$ echo $?
+1
+
+we’re suppressing the error output (stderr) of the ls -0 command, redirect it to standard output (stdout), writing it to /dev/null thereby 
+immediately discarding it. The >& symbol is an operator that copies the output of the first file descriptor (2) and redirects to the output
+of the second file descriptor (1).
+
+## ${1}, ${2}.... ${9}, ${10} etc
+## ${0} is the name of the script itself
+## $* and $@ represent all args as one
+## $# is the number of args passed
+## $$ is the PID of the script run instance
+## $? return code of the last executed command 
+
+-------
+>> dirs    -- lists the contents of the directory stack
+>> eval    -- convert string into command
+>> exec    -- This shell builtin replaces the current process with a specified command - remember fork(), wait(), exec()??
+>> find    -- help you do a lookup over the file directories
+>> basename -- extract filename from the 
+>> dirname  -- extract directory name from the
+
+https://medium.com/swlh/shell-scripting-2-writing-the-script-8efae61eac7e
+
+https://medium.com/@sankad_19852/shell-scripting-exercises-5eb7220c2252  Example
