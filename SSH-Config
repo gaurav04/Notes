@@ -1,0 +1,31 @@
+Host my-prod-public-bastion
+  HostName 10.0.0.1
+  User ubuntu
+  IdentityFile ~/.ssh/my-prod-public-bastion
+
+Acccess:
+
+ssh my-prod-public-bastion
+
+--------------------
+
+Host my-prod-public-bastion
+  HostName 10.0.0.1
+  User ubuntu
+  IdentityFile ~/.ssh/my-prod-public-bastion
+Host my-prod-private-bastion
+  HostName 10.0.0.2
+  User ubuntu
+  IdentityFile ~/.ssh/my-prod-private-bastion
+  ProxyCommand ssh -W %h:%p my-prod-public-bastion
+
+it will appear as though you are connected to server 2 when actually the traffic is being routed from server 1 to server 2 behind the scenes.
+
+ssh my-prod-private-bastion
+
+--------------------------
+
+ssh -L 5432:my-database-server:5432 my-prod-private-bastion
+
+In this example, I have an instance of MySQL, which is only accessible from my-prod-private-bastion, making it very difficult to access.
+Using SSH in this way means I can now connect to localhost:5432, and run queries against the database, just like I am sat on the server my-prod-private-bastion
